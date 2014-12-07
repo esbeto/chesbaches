@@ -4,13 +4,37 @@
   <script src="../bower_components/d3/d3.min.js"></script>
   <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
   <script src="../bower_components/rickshaw/rickshaw.js"></script>
+  <script src="../bower_components/jquery/dist/jquery.js"></script>
+
 
   <!--[if lte IE 8]>
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
   <![endif]-->
   <style>
     html, body {width:100%; height:100%; padding: 0; margin: 0;}
-    #cartodb-map { width: 100%; height:calc(100% - 140px);}
+    body {
+      font-family: sans-serif;
+    }
+    #cartodb-map { width: 100%; height:calc(100% - 180px);}
+
+    .xaxis {
+      overflow: hidden;
+      width: 100%;
+    }
+    .month {
+      float: left;
+      height: 20px;
+      margin-top: 10px;
+      text-align: center;
+      width: 8.3333%;
+    }
+
+    rect {
+      opacity: 0.7
+    }
+    rect:hover {
+      opacity: 1;
+    }
   </style>
 
   <script>
@@ -30,77 +54,86 @@
       });
       layer.addTo(map);
 
-      // Layer de datos de CIC NL Public:
+      // Layer de datos de Cartodb:
       var layerUrl = 'http://esbeto.cartodb.com/api/v2/viz/188cf76e-7da0-11e4-8f24-0e018d66dc29/viz.jsonn';
 
-      // Aquí es donde comienza la diversión:
-      // SELECT nl_public.* FROM nl_public, mun_poly WHERE ST_Intersects(nl_public.the_geom, mun_poly.the_geom) AND nl_public.post_cat IN ('BACHE O VIA DAÑADA') AND mun_poly.name IN ('SP')
-
-      // var sqlQuery = "SELECT * FROM nl_public"
-      // 5CA2D1
-      // Para meses:
-      var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '03'";
-      var subLayerOptions = {
-        sql: sqlQuery,
-        cartocss: "#baches_latest { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF0000; marker-allow-overlap: true; marker-comp-op: multiply }"
-      }
+      var sublayers = [];
 
       // Agregar el layer
       cartodb.createLayer(map, layerUrl)
       .addTo(map)
       .on('done', function(layer) {
-        layer.getSubLayer(0).set(subLayerOptions);
+        var sublayer = layer.getSubLayer(0);
+        sublayers.push(sublayer);
       }).on('error', function(err) {
-        //log the error
-        console.log("Hubo un error" + err)
+        console.log("Hubo un error: " + err)
       });
+
+       changeLayer = function(month) {
+         var mes = +month + 1;
+         var previous = mes;
+         console.log(mes);
+         var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM created_at) = " + mes;
+         var subLayerOptions = {
+           sql: sqlQuery,
+           cartocss: "#baches_latest { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF0000; marker-allow-overlap: true; marker-comp-op: multiply }"};
+         sublayers[0].set(subLayerOptions);
+         return true;
+      }
     }
 
     window.onload = function() {
       var graph = new Rickshaw.Graph( {
         element: document.querySelector("#month_controller"),
-        width: window.innerWidth,
+        width: window.innerWidth - 15,
         height: 140,
         renderer: 'bar',
-        series: [
-        {
-          data: [ { x: 0, y: 40 },
-            { x: 1, y: 49 },
-            { x: 2, y: 38 },
-            { x: 3, y: 30 },
-            { x: 4, y: 32 },
-            { x: 5, y: 49 },
-            { x: 6, y: 38 },
-            { x: 7, y: 30 },
-            { x: 8, y: 32 },
-            { x: 9, y: 49 },
-            { x: 10, y: 38 },
-            { x: 11, y: 30 },
-            { x: 12, y: 32 }
-             ],
-          color: '#4682b4'
-        }, {
+        series: [{
           data: [ { x: 0, y: 20 },
-          { x: 1, y: 24 },
-          { x: 2, y: 19 },
-          { x: 3, y: 15 },
-          { x: 4, y: 16 },
-          { x: 5, y: 49 },
-          { x: 6, y: 38 },
-          { x: 7, y: 30 },
-          { x: 8, y: 32 },
-          { x: 9, y: 49 },
-          { x: 10, y: 38 },
-          { x: 11, y: 30 },
-          { x: 12, y: 32 }],
-          color: '#9cc1e0'
-
-        } ]
-      });
+            { x: 1, y: 11 },
+            { x: 2, y: 16 },
+            { x: 3, y: 10 },
+            { x: 4, y: 16 },
+            { x: 5, y: 16 },
+            { x: 6, y: 11 },
+            { x: 7, y: 10 },
+            { x: 8, y: 28 },
+            { x: 9, y: 29 },
+            { x: 10, y: 30 },
+            { x: 11, y: 15 }
+             ],
+          color: '#6A1115'
+        }]
+        });
 
       graph.render();
+      var previous = 1;
+      var Hover = Rickshaw.Class.create(Rickshaw.Graph.HoverDetail, {
+
+
+        render: function(args) {
+          var changed = false;
+          var month = args.formattedXValue.split(":")[2].split(" ")[0];
+          if (+month == previous) {
+            console.log("equal");
+          } else {
+            console.log(+month);
+            previous = +month;
+          }
+          if(changed) {
+            changeLayer(month);
+          }
+        }
+      });
+      var hover = new Hover( { graph: graph } );
     }
 
+      /*
+      var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '03'";
+      var subLayerOptions = {
+      sql: sqlQuery,
+      cartocss: "#baches_latest { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF0000; marker-allow-overlap: true; marker-comp-op: multiply }"
+      */
 
   </script>
 </head>
@@ -108,5 +141,19 @@
   <div id='cartodb-map'></div>
 
   <div id="month_controller"></div>
+  <div class="xaxis">
+    <div class="month">ENE</div>
+    <div class="month">FEB</div>
+    <div class="month">MAR</div>
+    <div class="month">ABR</div>
+    <div class="month">MAY</div>
+    <div class="month">JUN</div>
+    <div class="month">JUL</div>
+    <div class="month">AGO</div>
+    <div class="month">SEP</div>
+    <div class="month">OCT</div>
+    <div class="month">NOV</div>
+    <div class="month">DIC</div>
+  </div>
 </body>
 </html>
