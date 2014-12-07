@@ -1,7 +1,10 @@
 <html>
 <head>
   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <script src="../bower_components/d3/d3.min.js"></script>
   <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+  <script src="../bower_components/rickshaw/rickshaw.js"></script>
+
   <!--[if lte IE 8]>
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
   <![endif]-->
@@ -36,7 +39,7 @@
       // var sqlQuery = "SELECT * FROM nl_public"
       // 5CA2D1
       // Para meses:
-      var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '11'";
+      var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '03'";
       var subLayerOptions = {
         sql: sqlQuery,
         cartocss: "#baches_latest { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF0000; marker-allow-overlap: true; marker-comp-op: multiply }"
@@ -53,25 +56,30 @@
       });
     }
 
+    window.onload = function() {
+      var graph = new Rickshaw.Graph( {
+        element: document.querySelector("#month_controller"),
+        renderer: 'bar',
+        series: [
+        {
+          data: [ { x: 0, y: 40 }, { x: 1, y: 49 }, { x: 2, y: 38 }, { x: 3, y: 30 }, { x: 4, y: 32 } ],
+          color: '#4682b4'
+        }, {
+          data: [ { x: 0, y: 20 }, { x: 1, y: 24 }, { x: 2, y: 19 }, { x: 3, y: 15 }, { x: 4, y: 16 } ],
+          color: '#9cc1e0'
+
+        } ]
+      });
+
+      graph.render();
+    }
+
+
   </script>
 </head>
 <body onload="init()">
   <div id='cartodb-map'></div>
 
-  <div id="month_controller">
-    var graph = new Rickshaw.Graph( {
-      element: document.querySelector("#chart"),
-      renderer: 'bar',
-      series: [{
-        data: [ { x: 0, y: 40 }, { x: 1, y: 49 }, ...
-        color: 'steelblue'
-      }, {
-        data: [ { x: 0, y: 20 }, { x: 1, y: 24 }, ...
-        color: 'lightblue'
-      }]
-    });
-
-    graph.render();
-  </div>
+  <div id="month_controller"></div>
 </body>
 </html>
