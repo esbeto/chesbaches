@@ -15,8 +15,17 @@
     body {
       font-family: sans-serif;
     }
-    #cartodb-map { width: 100%; height:calc(100% - 180px);}
-
+    #cartodb-map { width: 100%; height:calc(100% - 190px);}
+    #month-title {
+      position: absolute;
+      left: 10px;
+      margin-top: 5px;
+      width: calc(100% -10px);
+    }
+    #month_controller {
+      margin-left: 10px;
+      margin-top: 10px;
+    }
     .xaxis {
       overflow: hidden;
       width: 100%;
@@ -142,7 +151,9 @@
 </head>
 <body onload="init()">
   <div id='cartodb-map'></div>
-
+  <div id="month-title">
+    <h2>Frecuencia de baches por mes:</h2>
+  </div>
   <div id="month_controller"></div>
   <div class="xaxis">
     <div class="month">ENE</div>
