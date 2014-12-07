@@ -59,13 +59,40 @@
     window.onload = function() {
       var graph = new Rickshaw.Graph( {
         element: document.querySelector("#month_controller"),
+        width: window.innerWidth,
+        height: 140,
         renderer: 'bar',
         series: [
         {
-          data: [ { x: 0, y: 40 }, { x: 1, y: 49 }, { x: 2, y: 38 }, { x: 3, y: 30 }, { x: 4, y: 32 } ],
+          data: [ { x: 0, y: 40 },
+            { x: 1, y: 49 },
+            { x: 2, y: 38 },
+            { x: 3, y: 30 },
+            { x: 4, y: 32 },
+            { x: 5, y: 49 },
+            { x: 6, y: 38 },
+            { x: 7, y: 30 },
+            { x: 8, y: 32 },
+            { x: 9, y: 49 },
+            { x: 10, y: 38 },
+            { x: 11, y: 30 },
+            { x: 12, y: 32 }
+             ],
           color: '#4682b4'
         }, {
-          data: [ { x: 0, y: 20 }, { x: 1, y: 24 }, { x: 2, y: 19 }, { x: 3, y: 15 }, { x: 4, y: 16 } ],
+          data: [ { x: 0, y: 20 },
+          { x: 1, y: 24 },
+          { x: 2, y: 19 },
+          { x: 3, y: 15 },
+          { x: 4, y: 16 },
+          { x: 5, y: 49 },
+          { x: 6, y: 38 },
+          { x: 7, y: 30 },
+          { x: 8, y: 32 },
+          { x: 9, y: 49 },
+          { x: 10, y: 38 },
+          { x: 11, y: 30 },
+          { x: 12, y: 32 }],
           color: '#9cc1e0'
 
         } ]
