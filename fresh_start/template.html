@@ -30,9 +30,10 @@
     }
 
     rect {
+      cursor: pointer;
       opacity: 0.7
     }
-    rect:hover {
+    rect.active {
       opacity: 1;
     }
   </style>
@@ -116,7 +117,19 @@
       });
       var hover = new Hover( { graph: graph } );
       */
+      $('#month_controller rect').each(function(index, element){
+        $(element).attr("name", index);
+        $(element).click(function() {
+          var month = $(this).attr('name');
+          changeLayer(month);
+          $('#month_controller rect').attr('class', '');
+          $(this).attr('class', 'active');
+        });
+      });
     }
+
+
+
 
       /*
       var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '03'";
