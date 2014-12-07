@@ -1,0 +1,77 @@
+<html>
+<head>
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+  <![endif]-->
+  <style>
+    html, body {width:100%; height:100%; padding: 0; margin: 0;}
+    #cartodb-map { width: 100%; height:calc(100% - 140px);}
+  </style>
+
+  <script>
+    var map;
+    function init(){
+      // initiate new map
+      map = new L.Map('cartodb-map', {
+        // lat y long de san pedro
+        center: [25.6515,-100.3772],
+        // zoom inicial
+        zoom: 14
+      })
+
+      // Agregar mapa base
+      var layer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+      });
+      layer.addTo(map);
+
+      // Layer de datos de CIC NL Public:
+      var layerUrl = 'http://esbeto.cartodb.com/api/v2/viz/188cf76e-7da0-11e4-8f24-0e018d66dc29/viz.jsonn';
+
+      // Aquí es donde comienza la diversión:
+      // SELECT nl_public.* FROM nl_public, mun_poly WHERE ST_Intersects(nl_public.the_geom, mun_poly.the_geom) AND nl_public.post_cat IN ('BACHE O VIA DAÑADA') AND mun_poly.name IN ('SP')
+
+      // var sqlQuery = "SELECT * FROM nl_public"
+      // 5CA2D1
+      // Para meses:
+      var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM last_mod) = '11'";
+      var subLayerOptions = {
+        sql: sqlQuery,
+        cartocss: "#baches_latest { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 1; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: 10; marker-fill: #FF0000; marker-allow-overlap: true; marker-comp-op: multiply }"
+      }
+
+      // Agregar el layer
+      cartodb.createLayer(map, layerUrl)
+      .addTo(map)
+      .on('done', function(layer) {
+        layer.getSubLayer(0).set(subLayerOptions);
+      }).on('error', function(err) {
+        //log the error
+        console.log("Hubo un error" + err)
+      });
+    }
+
+  </script>
+</head>
+<body onload="init()">
+  <div id='cartodb-map'></div>
+
+  <div id="month_controller">
+    var graph = new Rickshaw.Graph( {
+      element: document.querySelector("#chart"),
+      renderer: 'bar',
+      series: [{
+        data: [ { x: 0, y: 40 }, { x: 1, y: 49 }, ...
+        color: 'steelblue'
+      }, {
+        data: [ { x: 0, y: 20 }, { x: 1, y: 24 }, ...
+        color: 'lightblue'
+      }]
+    });
+
+    graph.render();
+  </div>
+</body>
+</html>
