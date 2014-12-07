@@ -107,23 +107,13 @@
         });
 
       graph.render();
-      var previous = 1;
       var Hover = Rickshaw.Class.create(Rickshaw.Graph.HoverDetail, {
 
 
         render: function(args) {
           var changed = false;
           var month = args.formattedXValue.split(":")[2].split(" ")[0];
-          if (+month == previous) {
-            console.log("equal");
-          } else {
-            console.log(+month);
-            previous = +month;
-            var changed = true;
-          }
-          if(changed) {
             changeLayer(month);
-          }
         }
       });
       var hover = new Hover( { graph: graph } );
