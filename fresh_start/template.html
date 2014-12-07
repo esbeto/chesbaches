@@ -71,7 +71,6 @@
 
        changeLayer = function(month) {
          var mes = +month + 1;
-         var previous = mes;
          console.log(mes);
          var sqlQuery = "SELECT * FROM baches_latest where EXTRACT(MONTH FROM created_at) = " + mes;
          var subLayerOptions = {
@@ -107,11 +106,9 @@
         });
 
       graph.render();
+
       var Hover = Rickshaw.Class.create(Rickshaw.Graph.HoverDetail, {
-
-
         render: function(args) {
-          var changed = false;
           var month = args.formattedXValue.split(":")[2].split(" ")[0];
             changeLayer(month);
         }
